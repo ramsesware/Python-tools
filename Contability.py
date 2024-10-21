@@ -6,7 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
 # Archivo donde se guardarán los registros
-archivo = "contabilidad.csv"
+archivo = "contability.csv"
 
 # Función para cargar registros previos desde el archivo
 def cargar_registros():

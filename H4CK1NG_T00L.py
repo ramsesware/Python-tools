@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 import requests
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from PyPDF2 import PdfReader
+from docx import Document
 import os
 
 
@@ -36,19 +38,16 @@ root.config(menu=menu)
 herramientas_menu = tk.Menu(menu, font=font_style, tearoff=0, bg="#2d2d2d", fg="lime")
 menu.add_cascade(label="Herramientas", menu=herramientas_menu, font=font_style)
 herramientas_menu.add_command(label="Análisis de Directorios Web", command=lambda: cambiar_herramienta("analisis_directorios"))
-herramientas_menu.add_command(label="Analisis de Metadatos", command=lambda: cambiar_herramienta("busqueda_imagenes"))
+herramientas_menu.add_command(label="Análisis de Metadatos", command=lambda: cambiar_herramienta("analisis_metadatos"))
 
 # Frame para el análisis de directorios web
 frame_directorios = ttk.Frame(contenedor)
-frame_directorios.place(relx=0.5, rely=0.5, anchor=tk.CENTER)  # Centrar el frame
-frame_directorios.config(style="TFrame")
 herramientas_frames["analisis_directorios"] = frame_directorios
 
-# Frame para la busqueda de imagenes
-frame_imagenes = ttk.Frame(contenedor)
-frame_imagenes.place(relx=0.5, rely=0.5, anchor=tk.CENTER)  # Centrar el frame
-frame_imagenes.config(style="TFrame")
-herramientas_frames["busqueda_imagenes"] = frame_imagenes
+# Frame para el análisis de metadatos
+frame_metadatos = ttk.Frame(contenedor)
+herramientas_frames["analisis_metadatos"] = frame_metadatos
+
 
 # Función para seleccionar diccionario
 def seleccionar_diccionario():
@@ -79,27 +78,6 @@ def limpiar_resultados():
     resultado_texto.delete("1.0", tk.END)
     progreso["value"] = 0  # Reiniciar la barra de progreso a 0
     messagebox.showinfo("Resultados limpiados", "El cuadro de texto y la barra de progreso han sido limpiados.")
-
-def buscar_imagenes():
-    url = url_entry.get()
-    if not url:
-        messagebox.showwarning("Advertencia", "Por favor, introduce una URL válida.")
-        return
-
-    # Ejemplo de lógica para buscar imágenes en una URL
-    response = requests.get(url)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
-        image_links = [img.get('src') for img in soup.find_all('img')]
-        if not image_links:
-            messagebox.showinfo("Resultado", "No se encontraron imágenes en la URL proporcionada.")
-        else:
-            for img_link in image_links:
-                resultado_texto.insert(tk.END, f"Imagen encontrada: {img_link}\n", "green_text")
-                resultado_texto.see(tk.END)
-    else:
-        messagebox.showwarning("Advertencia", "No se pudo acceder a la URL proporcionada.")
-
 
 # Función para realizar el análisis de directorios web
 def analizar_directorios():
@@ -150,8 +128,46 @@ def cambiar_herramienta(herramienta):
     # Mostrar el frame correspondiente a la herramienta seleccionada
     herramientas_frames[herramienta].pack(fill="both", expand=True)
 
+# Función para seleccionar y analizar el archivo
+def seleccionar_archivo():
+    filepath = filedialog.askopenfilename(filetypes=[("Todos los archivos", "*.*"), ("Archivos PDF", "*.pdf"), ("Archivos Word", "*.docx")])
+    if filepath:
+        resultado_texto_metadatos.delete("1.0", tk.END)  # Limpiar resultados anteriores
+        resultado_texto_metadatos.insert(tk.END, f"Archivo seleccionado: {os.path.basename(filepath)}\n\n", "green_text")
+        analizar_metadatos(filepath)
+    else:
+        messagebox.showwarning("Advertencia", "No se seleccionó ningún archivo")
 
-#cambiar_herramienta("analisis_directorios")
+# Función para analizar los metadatos del archivo
+def analizar_metadatos(filepath):
+    try:
+        if filepath.lower().endswith('.pdf'):
+            # Analizar metadatos de un archivo PDF
+            with open(filepath, 'rb') as file:
+                pdf = PdfReader(file)
+                info = pdf.metadata
+                resultado_texto_metadatos.insert(tk.END, "Metadatos del archivo PDF:\n", "green_text")
+                for key, value in info.items():
+                    resultado_texto_metadatos.insert(tk.END, f"{key}: {value}\n")
+        elif filepath.lower().endswith('.docx'):
+            # Analizar metadatos de un archivo DOCX
+            doc = Document(filepath)
+            props = doc.core_properties
+            resultado_texto_metadatos.insert(tk.END, "Metadatos del archivo DOCX:\n", "green_text")
+            resultado_texto_metadatos.insert(tk.END, f"Título: {props.title}\n")
+            resultado_texto_metadatos.insert(tk.END, f"Autor: {props.author}\n")
+            resultado_texto_metadatos.insert(tk.END, f"Último autor: {props.last_modified_by}\n")
+            resultado_texto_metadatos.insert(tk.END, f"Fecha de creación: {props.created}\n")
+            resultado_texto_metadatos.insert(tk.END, f"Última modificación: {props.modified}\n")
+            resultado_texto_metadatos.insert(tk.END, f"Categoría: {props.category}\n")
+            resultado_texto_metadatos.insert(tk.END, f"Comentarios: {props.comments}\n")
+        else:
+            messagebox.showwarning("Formato no soportado", "El formato del archivo seleccionado no es compatible para el análisis de metadatos.")
+    except Exception as e:
+        messagebox.showerror("Error", f"Error al analizar el archivo: {e}")
+
+
+# Componentes para el frame de análisis de directorios web
 
 # Campo para ingresar la URL
 ttk.Label(frame_directorios, text="URL:", font=font_style, foreground="lime", background="#2d2d2d").grid(row=0, column=0, padx=5, pady=5)
@@ -192,19 +208,22 @@ resultado_texto.configure(yscrollcommand=scrollbar.set)
 resultado_texto.pack(side="left", fill="both", expand=True)
 scrollbar.pack(side="right", fill="y")
 
-# Frame para la busqueda de imagenes
+# Componentes para el frame de análisis de metadatos
 
-boton1 = tk.Button(frame_imagenes, text="Botón 1", height=2, width=20, font=font_style, bg="#3c3f41", fg="lime", activebackground="gray", activeforeground="black")
-boton1.grid(row=0, column=0, padx=20, pady=20)
+# Botón para seleccionar archivo
+seleccionar_btn = tk.Button(frame_metadatos, text="Seleccionar Archivo", command=seleccionar_archivo, height="2", width="25", font=font_style, bg="#3c3f41", fg="lime", activebackground="gray", activeforeground="black")
+seleccionar_btn.grid(row=0, column=0, padx=5, pady=5)
 
-boton2 = tk.Button(frame_imagenes, text="Botón 2", height=2, width=20, font=font_style, bg="#3c3f41", fg="lime", activebackground="gray", activeforeground="black")
-boton2.grid(row=0, column=1, padx=20, pady=20)
+# Área de texto con scroll para mostrar resultados
+frame_resultado_metadatos = ttk.Frame(frame_metadatos)
+frame_resultado_metadatos.grid(row=1, columnspan=2, padx=5, pady=5)
+resultado_texto_metadatos = tk.Text(frame_resultado_metadatos, height=20, width=80, font=font_style, bg="#3c3f41", fg="lime", insertbackground="white")
+resultado_texto_metadatos.tag_configure("green_text", foreground="lime")
+scrollbar_metadatos = ttk.Scrollbar(frame_resultado_metadatos, orient="vertical", command=resultado_texto_metadatos.yview)
+resultado_texto_metadatos.configure(yscrollcommand=scrollbar_metadatos.set)
+resultado_texto_metadatos.pack(side="left", fill="both", expand=True)
+scrollbar_metadatos.pack(side="right", fill="y")
 
-boton3 = tk.Button(frame_imagenes, text="Botón 3", height=2, width=20, font=font_style, bg="#3c3f41", fg="lime", activebackground="gray", activeforeground="black")
-boton3.grid(row=1, column=0, padx=20, pady=20)
-
-boton4 = tk.Button(frame_imagenes, text="Botón 4", height=2, width=20, font=font_style, bg="#3c3f41", fg="lime", activebackground="gray", activeforeground="black")
-boton4.grid(row=1, column=1, padx=20, pady=20)
 
 # Estilo personalizado para ttk widgets
 style = ttk.Style()
@@ -212,5 +231,8 @@ style.configure("TFrame", background="#2d2d2d")
 style.configure("TLabel", background="#2d2d2d", foreground="lime")
 style.configure("TEntry", fieldbackground="#3c3f41", foreground="lime")
 style.configure("Custom.Horizontal.TProgressbar", troughcolor="#3c3f41", background="#5a5e62")
+
+# Mostrar inicialmente el frame de análisis de directorios
+cambiar_herramienta("analisis_directorios")
 
 root.mainloop()

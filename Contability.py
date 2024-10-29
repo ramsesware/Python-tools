@@ -6,7 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
 # Archivo donde se guardarán los registros
-archivo = "contability.csv"
+archivo = "contabilidad.csv"
 
 # Función para cargar registros previos desde el archivo
 def cargar_registros():
@@ -154,7 +154,7 @@ root = tk.Tk()
 root.title("Contabilidad Personal")
 
 # Ampliar el tamaño de la ventana
-root.geometry("1200x500")  # Ventana más amplia
+root.geometry("1920x1080")  # Ventana más amplia
 
 # Colores de la interfaz
 color_fondo = "#2E2E2E"  # Color de fondo gris oscuro
@@ -171,7 +171,7 @@ frame_principal.pack(fill=tk.BOTH, expand=True)
 
 # Crear un frame para la sección de ingreso/gasto
 frame_izquierda = tk.Frame(frame_principal, bg=color_fondo, padx=20, pady=20)
-frame_izquierda.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+frame_izquierda.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
 # Ventana de ingreso
 label_ingreso = tk.Label(frame_izquierda, text="Registrar Ingreso", font=('Helvetica', 14, 'bold'), bg=color_fondo, fg=color_texto)
@@ -221,7 +221,7 @@ btn_salir.grid(row=11, columnspan=2, pady=10)
 
 # Crear un frame para el gráfico
 frame_derecha = tk.Frame(frame_principal, bg=color_fondo, padx=20, pady=20)
-frame_derecha.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+frame_derecha.pack(side=tk.LEFT, fill=tk.Y, expand=False)
 
 # Gráfico
 figura = plt.Figure(figsize=(4, 4), dpi=100)  # Reducir tamaño del gráfico
@@ -239,13 +239,48 @@ label_balance_total.pack(side=tk.BOTTOM, pady=(10, 0))
 frame_historial = tk.Frame(frame_principal, padx=10, pady=10, bg=color_fondo)
 frame_historial.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-# Frame para historial de ingresos
-frame_historial_ingresos = tk.Frame(frame_historial, padx=10, pady=10, bg=color_fondo)
-frame_historial_ingresos.pack(fill=tk.BOTH, expand=True)
+canvas_ingresos = tk.Canvas(frame_historial, bg=color_fondo, height=200)
+scrollbar_ingresos = tk.Scrollbar(canvas_ingresos, orient="vertical", command=canvas_ingresos.yview)
+canvas_ingresos.configure(yscrollcommand=scrollbar_ingresos.set)
 
-# Frame para historial de gastos
-frame_historial_gastos = tk.Frame(frame_historial, padx=10, pady=10, bg=color_fondo)
-frame_historial_gastos.pack(fill=tk.BOTH, expand=True)
+# Frame para historial de ingresos
+frame_historial_ingresos = tk.Frame(canvas_ingresos, padx=10, pady=10, bg=color_fondo)
+
+# Empaquetar canvas y scrollbar para ingresos
+canvas_ingresos.pack(side=tk.TOP, fill=tk.BOTH, expand=True, pady=(0, 10))
+scrollbar_ingresos.pack(side=tk.RIGHT, fill=tk.Y)
+
+# Asociar el frame de ingresos con el canvas
+canvas_ingresos.create_window((0, 0), window=frame_historial_ingresos, anchor="nw")
+
+# Función para ajustar la región desplazable de ingresos
+def ajustar_scrollbars_ingresos(event):
+    canvas_ingresos.configure(scrollregion=canvas_ingresos.bbox("all"))
+
+# Asociar el ajuste de scrollbars al evento de configuración
+frame_historial_ingresos.bind("<Configure>", ajustar_scrollbars_ingresos)
+
+# Crear un canvas y scrollbar para el historial de gastos
+canvas_gastos = tk.Canvas(frame_historial, bg=color_fondo, height=200)
+scrollbar_gastos = tk.Scrollbar(canvas_gastos, orient="vertical", command=canvas_gastos.yview)
+canvas_gastos.configure(yscrollcommand=scrollbar_gastos.set)
+
+# Crear el frame para gastos dentro del canvas
+frame_historial_gastos = tk.Frame(canvas_gastos, padx=10, pady=10, bg=color_fondo)
+
+# Empaquetar canvas y scrollbar para gastos
+canvas_gastos.pack(side=tk.TOP, fill=tk.BOTH, expand=True, pady=(10,0))
+scrollbar_gastos.pack(side=tk.RIGHT, fill=tk.Y)
+
+# Asociar el frame de gastos con el canvas
+canvas_gastos.create_window((0, 0), window=frame_historial_gastos, anchor="nw")
+
+# Función para ajustar la región desplazable de gastos
+def ajustar_scrollbars_gastos(event):
+    canvas_gastos.configure(scrollregion=canvas_gastos.bbox("all"))
+
+# Asociar el ajuste de scrollbars al evento de configuración
+frame_historial_gastos.bind("<Configure>", ajustar_scrollbars_gastos)
 
 # Títulos de los frames de historial
 tk.Label(frame_historial_ingresos, text="Historial de Ingresos", font=('Helvetica', 14, 'bold'), bg=color_fondo, fg=color_primario).pack(pady=10)

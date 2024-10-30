@@ -22,7 +22,7 @@ Run the script, and it will open a GUI where you can input a URL to search for i
 - `beautifulsoup4`
 - `PyPDF2`
 - `python-docx`
-- 
+
 ---
 
 ## 2. Contability.py

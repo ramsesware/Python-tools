@@ -8,7 +8,7 @@ I'll be pushing on this repository all my python tools
 
 ### Features:
 - **Web Directory Analysis:** Performs a dictionary-based analysis of possible web directories, checking their availability via HTTP/HTTPS requests.
-
+- **Metadata Analysis:** Extracts metadata from PDF and Word documents to uncover potentially sensitive information such as author names, modification dates, and software information.
 
 ### Future Development:
 The goal of `H4CK1NG_T00L.py` is to incorporate various tools used in penetration testing, all accessible from a single graphical user interface, prioritizing ease of use and productivity for both beginners and advanced users in the cybersecurity field.
@@ -20,7 +20,9 @@ Run the script, and it will open a GUI where you can input a URL to search for i
 - `tkinter`
 - `requests`
 - `beautifulsoup4`
-
+- `PyPDF2`
+- `python-docx`
+- 
 ---
 
 ## 2. Contability.py

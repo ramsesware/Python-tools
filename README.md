@@ -1,31 +1,7 @@
 # Python-tools
 I'll be pushing on this repository all my python tools 
 
-## 1. H4CK1NG_T00L.py
-
-### Description:
-`H4CK1NG_T00L.py` is a tool currently **under development**, with the goal of becoming a comprehensive suite of penetration testing tools integrated into a single graphical interface. The focus is on **ease of use** and **user-friendly GUI**, allowing penetration testers to perform common tasks more efficiently. At this stage of development, the script includes the following features:
-
-### Features:
-- **Web Directory Analysis:** Performs a dictionary-based analysis of possible web directories, checking their availability via HTTP/HTTPS requests.
-- **Metadata Analysis:** Extracts metadata from PDF and Word documents to uncover potentially sensitive information such as author names, modification dates, and software information.
-
-### Future Development:
-The goal of `H4CK1NG_T00L.py` is to incorporate various tools used in penetration testing, all accessible from a single graphical user interface, prioritizing ease of use and productivity for both beginners and advanced users in the cybersecurity field.
-
-### Usage:
-Run the script, and it will open a GUI where you can input a URL to search for images or analyze directories. The results will be displayed in the GUI along with real-time updates.
-
-### Dependencies:
-- `tkinter`
-- `requests`
-- `beautifulsoup4`
-- `PyPDF2`
-- `python-docx`
-
----
-
-## 2. Contability.py
+## 1. Contability.py
 
 ### Description:
 `Contability.py` is a personal finance management tool that allows users to track income and expenses through a graphical interface. It includes features for recording transactions, viewing the transaction history, and displaying a visual graph of the user's financial balance.

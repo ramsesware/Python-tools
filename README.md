@@ -29,13 +29,13 @@ If you are a Windows user, you can create a `.bat` file to execute the Python sc
 1. **Create a `.bat` file**:
     - Open **Notepad** or any text editor and paste the following code:
     ```bat
-    start "" "C:/Users/YOUR_USER_NAME/AppData/Local/Microsoft/WindowsApps/python.exe" C:/path/to/your/script/H4CK1NG_T00L.py
+    start "" "C:/Users/YOUR_USER_NAME/AppData/Local/Microsoft/WindowsApps/python.exe" C:/path/to/your/script/Contability.py
     ```
     - Replace `YOUR_USER_NAME` with your actual Windows username.
-    - Replace `C:/path/to/your/script/` with the actual path where your `H4CK1NG_T00L.py` file is located.
+    - Replace `C:/path/to/your/script/` with the actual path where your `Contability.py` file is located.
 
 2. **Save the file**:
-    - Save the file with a `.bat` extension, for example: `Run_H4CK1NG_T00L.bat`.
+    - Save the file with a `.bat` extension, for example: `Run_Contability.bat`.
 
 3. **Create a desktop shortcut**:
     - Right-click on the `.bat` file you just created and select **Create Shortcut**.
